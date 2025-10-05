@@ -137,6 +137,7 @@ nav {
 .nav-links {
   display: flex;
   list-style: none;
+  flex-wrap: wrap;
 }
 
 .nav-links li {
@@ -153,6 +154,10 @@ nav {
 }
 
 .nav-links a:hover {
+  background-color: #3498db;
+}
+
+.nav-links a.active {
   background-color: #3498db;
 }
 
@@ -250,6 +255,10 @@ nav {
   transform: translateY(-5px);
 }
 
+.category-card.active {
+  border: 3px solid #3498db;
+}
+
 .category-card img {
   width: 100%;
   height: 150px;
@@ -262,9 +271,9 @@ nav {
 }
 
 /* Products Section */
-.products {
+.products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
   margin-bottom: 40px;
 }
@@ -275,6 +284,7 @@ nav {
   overflow: hidden;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
+  position: relative;
 }
 
 .product-card:hover {
@@ -313,6 +323,16 @@ nav {
 .product-stock {
   font-size: 0.9rem;
   color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.product-category {
+  font-size: 0.8rem;
+  color: #3498db;
+  background: #ecf0f1;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
   margin-bottom: 10px;
 }
 
@@ -656,6 +676,53 @@ footer {
   background: #3498db;
 }
 
+/* Category Filter */
+.category-filter {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 2px solid #3498db;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.filter-btn:hover {
+  background: #3498db;
+  color: white;
+}
+
+.filter-btn.active {
+  background: #3498db;
+  color: white;
+}
+
+/* Quick View */
+.quick-view-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(52, 152, 219, 0.9);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.product-card:hover .quick-view-btn {
+  opacity: 1;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-top {
@@ -683,6 +750,10 @@ footer {
 
   .checkout-form {
     grid-template-columns: 1fr;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 }
 

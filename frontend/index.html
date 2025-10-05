@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShopEasy - Online Shopping</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -41,11 +41,14 @@
     <nav>
       <div class="container">
         <ul class="nav-links">
-          <li><a href="#" onclick="showHomePage()">Home</a></li>
+          <li><a href="#" onclick="showHomePage()" class="active">Home</a></li>
           <li><a href="#" onclick="filterByCategory('Electronics')">Electronics</a></li>
           <li><a href="#" onclick="filterByCategory('Fashion')">Fashion</a></li>
           <li><a href="#" onclick="filterByCategory('Home')">Home & Kitchen</a></li>
+          <li><a href="#" onclick="filterByCategory('Kitchen')">Kitchen</a></li>
           <li><a href="#" onclick="filterByCategory('Sports')">Sports</a></li>
+          <li><a href="#" onclick="filterByCategory('Beauty')">Beauty</a></li>
+          <li><a href="#" onclick="filterByCategory('Books')">Books</a></li>
           <li><a href="#" onclick="filterByCategory('all')">All Products</a></li>
         </ul>
       </div>
@@ -71,10 +74,22 @@
         </div>
       </section>
 
+      <!-- Category Filter -->
+      <div class="category-filter" id="category-filter">
+        <button class="filter-btn active" onclick="filterByCategory('all')">All Products</button>
+        <button class="filter-btn" onclick="filterByCategory('Electronics')">Electronics</button>
+        <button class="filter-btn" onclick="filterByCategory('Fashion')">Fashion</button>
+        <button class="filter-btn" onclick="filterByCategory('Home')">Home & Kitchen</button>
+        <button class="filter-btn" onclick="filterByCategory('Kitchen')">Kitchen</button>
+        <button class="filter-btn" onclick="filterByCategory('Sports')">Sports</button>
+        <button class="filter-btn" onclick="filterByCategory('Beauty')">Beauty</button>
+        <button class="filter-btn" onclick="filterByCategory('Books')">Books</button>
+      </div>
+
       <!-- Products Section -->
       <section class="products-section">
-        <h2 class="section-title">Featured Products</h2>
-        <div class="products" id="products-list">
+        <h2 class="section-title" id="products-title">Featured Products</h2>
+        <div class="products-grid" id="products-list">
           <!-- Products will be loaded dynamically -->
         </div>
       </section>
@@ -248,6 +263,5 @@
 
   <script src="script.js"></script>
 </body>
-
 
 </html>

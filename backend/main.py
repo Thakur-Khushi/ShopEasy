@@ -251,6 +251,176 @@ def seed_products():
 
     if session.query(models.Product).count() == 0:
         default_products = [
+            # Electronics
+            {
+                "name": "Wireless Headphones Pro", 
+                "price": 129.99, 
+                "description": "Premium noise-canceling headphones with 30-hour battery life.",
+                "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Electronics",
+                "stock_quantity": 50
+            },
+            {
+                "name": "Smart Fitness Watch", 
+                "price": 199.99, 
+                "description": "Track your health and fitness goals with advanced sensors.",
+                "image_url": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Electronics",
+                "stock_quantity": 30
+            },
+            {
+                "name": "Portable Bluetooth Speaker", 
+                "price": 79.99, 
+                "description": "Waterproof speaker with 360° sound and deep bass.",
+                "image_url": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Electronics",
+                "stock_quantity": 40
+            },
+            {
+                "name": "Gaming Laptop", 
+                "price": 1299.99, 
+                "description": "High-performance gaming laptop with RTX graphics.",
+                "image_url": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Electronics",
+                "stock_quantity": 15
+            },
+            
+            # Fashion
+            {
+                "name": "Designer Leather Jacket", 
+                "price": 249.99, 
+                "description": "Genuine leather jacket with modern fit and timeless style.",
+                "image_url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Fashion",
+                "stock_quantity": 25
+            },
+            {
+                "name": "Running Shoes Elite", 
+                "price": 119.99, 
+                "description": "Professional running shoes with responsive cushioning.",
+                "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Fashion",
+                "stock_quantity": 35
+            },
+            {
+                "name": "Vintage Sunglasses", 
+                "price": 89.99, 
+                "description": "Classic aviator sunglasses with UV protection.",
+                "image_url": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Fashion",
+                "stock_quantity": 60
+            },
+            
+            # Home & Kitchen
+            {
+                "name": "Modern Coffee Table", 
+                "price": 159.99, 
+                "description": "Minimalist coffee table with storage.",
+                "image_url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Home",
+                "stock_quantity": 15
+            },
+            {
+                "name": "Smart LED TV 55-inch", 
+                "price": 499.99, 
+                "description": "4K Ultra HD Smart TV with built-in streaming apps.",
+                "image_url": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Home",
+                "stock_quantity": 20
+            },
+            
+            # Kitchen
+            {
+                "name": "Stainless Steel Cookware Set", 
+                "price": 199.99, 
+                "description": "10-piece professional cookware set for your kitchen.",
+                "image_url": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Kitchen",
+                "stock_quantity": 25
+            },
+            {
+                "name": "Air Fryer XL", 
+                "price": 89.99, 
+                "description": "Digital air fryer for healthy cooking with less oil.",
+                "image_url": "https://images.unsplash.com/photo-1610057099443-6489badf2c0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Kitchen",
+                "stock_quantity": 30
+            },
+            {
+                "name": "Coffee Maker Machine", 
+                "price": 129.99, 
+                "description": "Programmable coffee maker with thermal carafe.",
+                "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Kitchen",
+                "stock_quantity": 40
+            },
+            
+            # Sports
+            {
+                "name": "Yoga Mat Premium", 
+                "price": 49.99, 
+                "description": "Extra thick non-slip yoga mat.",
+                "image_url": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Sports",
+                "stock_quantity": 45
+            },
+            {
+                "name": "Dumbbell Set 20kg", 
+                "price": 79.99, 
+                "description": "Adjustable dumbbell set for home workouts.",
+                "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Sports",
+                "stock_quantity": 20
+            },
+            
+            # Beauty
+            {
+                "name": "Skincare Gift Set", 
+                "price": 59.99, 
+                "description": "Complete skincare routine in one beautiful set.",
+                "image_url": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Beauty",
+                "stock_quantity": 35
+            },
+            {
+                "name": "Professional Hair Dryer", 
+                "price": 89.99, 
+                "description": "Ionic hair dryer for fast drying and frizz control.",
+                "image_url": "https://images.unsplash.com/photo-1522338140262-f46f5913618a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Beauty",
+                "stock_quantity": 25
+            },
+            
+            # Books
+            {
+                "name": "Bestseller Novel Collection", 
+                "price": 39.99, 
+                "description": "Set of 3 bestselling fiction novels.",
+                "image_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Books",
+                "stock_quantity": 50
+            },
+            {
+                "name": "Cookbook: Healthy Recipes", 
+                "price": 24.99, 
+                "description": "200+ healthy and delicious recipes for everyday cooking.",
+                "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
+                "category": "Books",
+                "stock_quantity": 40
+            }
+        ]
+        for p in default_products:
+            session.add(models.Product(**p))
+        session.commit()
+        print("✅ Default products added to DB.")
+    else:
+        print("✅ Products already exist in DB.")
+    session.close()
+    """Auto populate DB with default products if empty."""
+    session: Session = next(db.get_db())
+
+    if session.query(models.Product).count() == 0:
+        default_products = [
             {
                 "name": "Wireless Headphones Pro", 
                 "price": 129.99, 

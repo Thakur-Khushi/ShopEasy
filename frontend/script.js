@@ -5,6 +5,7 @@ let authToken = localStorage.getItem('authToken');
 let products = [];
 let categories = [];
 let cart = [];
+let currentCategory = 'all';
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', function () {
@@ -12,7 +13,26 @@ document.addEventListener('DOMContentLoaded', function () {
   loadProducts();
   loadCategories();
   updateCartCount();
+  setupEventListeners();
 });
+
+// Setup event listeners
+function setupEventListeners() {
+  // Search on enter key
+  document
+    .getElementById('search-input')
+    .addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        searchProducts();
+      }
+    });
+
+  // Form submissions
+  document.getElementById('login-form').addEventListener('submit', handleLogin);
+  document
+    .getElementById('register-form')
+    .addEventListener('submit', handleRegister);
+}
 
 // Authentication Functions
 async function checkAuthStatus() {
@@ -61,6 +81,7 @@ function showGuestInfo() {
 function showHomePage() {
   hideAllPages();
   document.getElementById('home-page').classList.remove('hidden');
+  setActiveNav('Home');
 }
 
 function showLoginForm() {
@@ -84,6 +105,23 @@ function hideAllPages() {
   pages.forEach((page) => page.classList.add('hidden'));
 }
 
+function setActiveNav(category) {
+  // Remove active class from all nav items
+  document.querySelectorAll('.nav-links a').forEach((link) => {
+    link.classList.remove('active');
+  });
+
+  // Add active class to current category
+  document.querySelectorAll('.nav-links a').forEach((link) => {
+    if (
+      link.textContent === category ||
+      (category === 'Home' && link.textContent === 'Home')
+    ) {
+      link.classList.add('active');
+    }
+  });
+}
+
 // API Functions
 async function loadProducts(category = null) {
   try {
@@ -96,6 +134,7 @@ async function loadProducts(category = null) {
     const data = await response.json();
     products = data.products;
     displayProducts(products);
+    updateProductsTitle(category);
   } catch (error) {
     console.error('Error loading products:', error);
     showNotification('Error loading products', 'error');
@@ -110,6 +149,17 @@ async function loadCategories() {
     displayCategories();
   } catch (error) {
     console.error('Error loading categories:', error);
+    // Use default categories if API fails
+    categories = [
+      'Electronics',
+      'Fashion',
+      'Home',
+      'Kitchen',
+      'Sports',
+      'Beauty',
+      'Books',
+    ];
+    displayCategories();
   }
 }
 
@@ -120,9 +170,7 @@ async function loadCart() {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${API_BASE}/cart`, {
-      headers,
-    });
+    const response = await fetch(`${API_BASE}/cart`, { headers });
     const data = await response.json();
     cart = data.cart;
     displayCart();
@@ -157,7 +205,8 @@ function displayProducts(productsToDisplay) {
   container.innerHTML = '';
 
   if (productsToDisplay.length === 0) {
-    container.innerHTML = '<p class="empty-cart">No products found</p>';
+    container.innerHTML =
+      '<p class="empty-cart">No products found in this category</p>';
     return;
   }
 
@@ -165,31 +214,35 @@ function displayProducts(productsToDisplay) {
     const productCard = document.createElement('div');
     productCard.className = 'product-card';
     productCard.innerHTML = `
-                    <img src="${
-                      product.image_url || 'https://via.placeholder.com/300x200'
-                    }" alt="${product.name}" class="product-img">
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">$${product.price.toFixed(
-                          2
-                        )}</div>
-                        <div class="product-stock">${
-                          product.stock_quantity
-                        } in stock</div>
-                        <button class="add-to-cart" onclick="addToCart(${
-                          product.id
-                        })" 
-                                ${
-                                  product.stock_quantity === 0 ? 'disabled' : ''
-                                }>
-                            ${
-                              product.stock_quantity === 0
-                                ? 'Out of Stock'
-                                : 'Add to Cart'
-                            }
-                        </button>
-                    </div>
-                `;
+            <div style="position: relative;">
+                <img src="${
+                  product.image_url || 'https://via.placeholder.com/300x200'
+                }" alt="${product.name}" class="product-img">
+                <button class="quick-view-btn" onclick="quickView(${
+                  product.id
+                })">Quick View</button>
+            </div>
+            <div class="product-info">
+                <div class="product-category">${
+                  product.category || 'General'
+                }</div>
+                <h3 class="product-title">${product.name}</h3>
+                <div class="product-price">$${product.price.toFixed(2)}</div>
+                <div class="product-stock">${
+                  product.stock_quantity || 10
+                } in stock</div>
+                <button class="add-to-cart" onclick="addToCart(${product.id})" 
+                        ${
+                          (product.stock_quantity || 10) === 0 ? 'disabled' : ''
+                        }>
+                    ${
+                      (product.stock_quantity || 10) === 0
+                        ? 'Out of Stock'
+                        : 'Add to Cart'
+                    }
+                </button>
+            </div>
+        `;
     container.appendChild(productCard);
   });
 }
@@ -198,13 +251,31 @@ function displayCategories() {
   const container = document.getElementById('categories-list');
   container.innerHTML = '';
 
+  const categoryImages = {
+    Electronics:
+      'https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+    Fashion:
+      'https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+    Home: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+    Kitchen:
+      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+    Sports:
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+    Beauty:
+      'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+    Books:
+      'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=150&q=80',
+  };
+
   categories.forEach((category) => {
     const categoryCard = document.createElement('div');
     categoryCard.className = 'category-card';
     categoryCard.innerHTML = `
-                    <img src="https://via.placeholder.com/300x150?text=${category}" alt="${category}">
-                    <h3>${category}</h3>
-                `;
+            <img src="${
+              categoryImages[category] || 'https://via.placeholder.com/300x150'
+            }" alt="${category}">
+            <h3>${category}</h3>
+        `;
     categoryCard.onclick = () => filterByCategory(category);
     container.appendChild(categoryCard);
   });
@@ -230,32 +301,31 @@ function displayCart() {
     const cartItem = document.createElement('div');
     cartItem.className = 'cart-item';
     cartItem.innerHTML = `
-                    <img src="${
-                      item.product.image_url ||
-                      'https://via.placeholder.com/80x80'
-                    }" 
-                         alt="${item.product.name}" class="cart-item-img">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.product.name}</div>
-                        <div class="cart-item-price">$${item.product.price.toFixed(
-                          2
-                        )}</div>
-                    </div>
-                    <div class="cart-item-quantity">
-                        <button class="quantity-btn" onclick="updateCartItem(${
-                          item.id
-                        }, ${item.quantity - 1})">-</button>
-                        <input type="text" class="quantity-input" value="${
-                          item.quantity
-                        }" readonly>
-                        <button class="quantity-btn" onclick="updateCartItem(${
-                          item.id
-                        }, ${item.quantity + 1})">+</button>
-                    </div>
-                    <button class="remove-item" onclick="removeFromCart(${
-                      item.id
-                    })">Remove</button>
-                `;
+            <img src="${
+              item.product.image_url || 'https://via.placeholder.com/80x80'
+            }" 
+                 alt="${item.product.name}" class="cart-item-img">
+            <div class="cart-item-details">
+                <div class="cart-item-title">${item.product.name}</div>
+                <div class="cart-item-price">$${item.product.price.toFixed(
+                  2
+                )}</div>
+            </div>
+            <div class="cart-item-quantity">
+                <button class="quantity-btn" onclick="updateCartItem(${
+                  item.id
+                }, ${item.quantity - 1})">-</button>
+                <input type="text" class="quantity-input" value="${
+                  item.quantity
+                }" readonly>
+                <button class="quantity-btn" onclick="updateCartItem(${
+                  item.id
+                }, ${item.quantity + 1})">+</button>
+            </div>
+            <button class="remove-item" onclick="removeFromCart(${
+              item.id
+            })">Remove</button>
+        `;
     container.appendChild(cartItem);
   });
 
@@ -275,23 +345,65 @@ function displayOrders(orders) {
     const orderItem = document.createElement('div');
     orderItem.className = 'order-item';
     orderItem.innerHTML = `
-                    <div class="order-header">
-                        <strong>Order #${order.id}</strong>
-                        <span>$${order.total.toFixed(2)}</span>
-                    </div>
-                    <div>Status: ${order.status}</div>
-                    <div>Date: ${new Date(
-                      order.created_at
-                    ).toLocaleDateString()}</div>
-                    <div class="order-products">
-                        <div class="order-product">
-                            <span>${order.name} (x${order.quantity})</span>
-                            <span>$${order.price.toFixed(2)}</span>
-                        </div>
-                    </div>
-                `;
+            <div class="order-header">
+                <strong>Order #${order.id}</strong>
+                <span>$${order.total.toFixed(2)}</span>
+            </div>
+            <div>Status: ${order.status}</div>
+            <div>Date: ${new Date(order.created_at).toLocaleDateString()}</div>
+            <div class="order-products">
+                <div class="order-product">
+                    <span>${order.name} (x${order.quantity})</span>
+                    <span>$${order.price.toFixed(2)}</span>
+                </div>
+            </div>
+        `;
     container.appendChild(orderItem);
   });
+}
+
+// Category Filtering
+function filterByCategory(category) {
+  currentCategory = category;
+  loadProducts(category);
+  showHomePage();
+  updateFilterButtons(category);
+  setActiveNav(category === 'all' ? 'Home' : category);
+}
+
+function updateFilterButtons(activeCategory) {
+  document.querySelectorAll('.filter-btn').forEach((btn) => {
+    btn.classList.remove('active');
+  });
+
+  document.querySelectorAll('.filter-btn').forEach((btn) => {
+    if (
+      btn.textContent === activeCategory ||
+      (activeCategory === 'all' && btn.textContent === 'All Products')
+    ) {
+      btn.classList.add('active');
+    }
+  });
+}
+
+function updateProductsTitle(category) {
+  const title = document.getElementById('products-title');
+  if (category && category !== 'all') {
+    title.textContent = `${category} Products`;
+  } else {
+    title.textContent = 'Featured Products';
+  }
+}
+
+// Quick View Function
+function quickView(productId) {
+  const product = products.find((p) => p.id === productId);
+  if (product) {
+    showNotification(
+      `Quick view: ${product.name} - $${product.price.toFixed(2)}`,
+      'info'
+    );
+  }
 }
 
 // Cart Functions
@@ -390,9 +502,7 @@ async function updateCartCount() {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${API_BASE}/cart`, {
-      headers,
-    });
+    const response = await fetch(`${API_BASE}/cart`, { headers });
     const data = await response.json();
     const totalItems = data.cart.reduce(
       (total, item) => total + item.quantity,
@@ -405,86 +515,79 @@ async function updateCartCount() {
 }
 
 // Auth Functions
-document
-  .getElementById('login-form')
-  .addEventListener('submit', async function (e) {
-    e.preventDefault();
+async function handleLogin(e) {
+  e.preventDefault();
 
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
 
-    try {
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+  try {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        authToken = data.access_token;
-        localStorage.setItem('authToken', authToken);
-        currentUser = data.user;
-        showUserInfo();
-        showHomePage();
-        showNotification('Login successful!', 'success');
-        updateCartCount();
-      } else {
-        showNotification(data.detail || 'Login failed', 'error');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      showNotification('Login failed', 'error');
+    if (response.ok) {
+      authToken = data.access_token;
+      localStorage.setItem('authToken', authToken);
+      currentUser = data.user;
+      showUserInfo();
+      showHomePage();
+      showNotification('Login successful!', 'success');
+      updateCartCount();
+    } else {
+      showNotification(data.detail || 'Login failed', 'error');
     }
-  });
+  } catch (error) {
+    console.error('Login error:', error);
+    showNotification('Login failed', 'error');
+  }
+}
 
-document
-  .getElementById('register-form')
-  .addEventListener('submit', async function (e) {
-    e.preventDefault();
+async function handleRegister(e) {
+  e.preventDefault();
 
-    const email = document.getElementById('register-email').value;
-    const username = document.getElementById('register-username').value;
-    const fullName = document.getElementById('register-fullname').value;
-    const password = document.getElementById('register-password').value;
+  const email = document.getElementById('register-email').value;
+  const username = document.getElementById('register-username').value;
+  const fullName = document.getElementById('register-fullname').value;
+  const password = document.getElementById('register-password').value;
 
-    try {
-      const response = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          username,
-          full_name: fullName,
-          password,
-        }),
-      });
+  try {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        username,
+        full_name: fullName,
+        password,
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        authToken = data.access_token;
-        localStorage.setItem('authToken', authToken);
-        currentUser = data.user;
-        showUserInfo();
-        showHomePage();
-        showNotification('Registration successful!', 'success');
-      } else {
-        showNotification(data.detail || 'Registration failed', 'error');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      showNotification('Registration failed', 'error');
+    if (response.ok) {
+      authToken = data.access_token;
+      localStorage.setItem('authToken', authToken);
+      currentUser = data.user;
+      showUserInfo();
+      showHomePage();
+      showNotification('Registration successful!', 'success');
+    } else {
+      showNotification(data.detail || 'Registration failed', 'error');
     }
-  });
+  } catch (error) {
+    console.error('Registration error:', error);
+    showNotification('Registration failed', 'error');
+  }
+}
 
 function logout() {
   authToken = null;
@@ -535,9 +638,9 @@ function showCheckoutForm() {
     const itemElement = document.createElement('div');
     itemElement.className = 'order-product';
     itemElement.innerHTML = `
-                    <span>${item.product.name} (x${item.quantity})</span>
-                    <span>$${itemTotal.toFixed(2)}</span>
-                `;
+            <span>${item.product.name} (x${item.quantity})</span>
+            <span>$${itemTotal.toFixed(2)}</span>
+        `;
     checkoutItems.appendChild(itemElement);
   });
 
@@ -598,11 +701,6 @@ async function processCheckout() {
 }
 
 // Utility Functions
-function filterByCategory(category) {
-  loadProducts(category);
-  showHomePage();
-}
-
 function searchProducts() {
   const searchTerm = document
     .getElementById('search-input')
@@ -611,11 +709,18 @@ function searchProducts() {
     const filteredProducts = products.filter(
       (product) =>
         product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm)
+        (product.description &&
+          product.description.toLowerCase().includes(searchTerm)) ||
+        (product.category &&
+          product.category.toLowerCase().includes(searchTerm))
     );
     displayProducts(filteredProducts);
+    document.getElementById(
+      'products-title'
+    ).textContent = `Search Results for "${searchTerm}"`;
   } else {
     displayProducts(products);
+    updateProductsTitle(currentCategory);
   }
 }
 
