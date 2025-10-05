@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-import hashlib
+from passlib.context import CryptContext
 
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "010305"
@@ -15,6 +15,16 @@ SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 Base = declarative_base()
 
+# Password hashing with fallback
+try:
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    # Test bcrypt
+    pwd_context.hash("test")
+except:
+    # Fallback to SHA256 if bcrypt fails
+    pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
+    print("⚠️  Using SHA256 for password hashing (install bcrypt for better security)")
+
 def get_db():
     db = SessionLocal()
     try:
@@ -22,10 +32,8 @@ def get_db():
     finally:
         db.close()
 
-# Simple password hashing without bcrypt
 def verify_password(plain_password, hashed_password):
-    return get_password_hash(plain_password) == hashed_password
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    # Simple SHA256 hashing for demo purposes
-    return hashlib.sha256(password.encode()).hexdigest()
+    return pwd_context.hash(password)

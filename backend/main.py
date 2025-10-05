@@ -243,6 +243,60 @@ def get_order(
     return order
 
 # ---------------------------------------------------------
+# 👑 Admin Routes
+# ---------------------------------------------------------
+@app.get("/api/admin/orders")
+def get_all_orders_admin(
+    db: Session = Depends(db.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    """Get all orders (Admin only)."""
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    orders = crud.get_all_orders(db)
+    return {"orders": orders}
+
+@app.put("/api/admin/orders/{order_id}/status")
+def update_order_status(
+    order_id: int,
+    status_update: schemas.OrderStatusUpdate,
+    db: Session = Depends(db.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    """Update order status (Admin only)."""
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        updated_order = crud.update_order_status(db, order_id, status_update.status)
+        return {
+            "message": "Order status updated successfully",
+            "order": updated_order
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+# ---------------------------------------------------------
+# 🏠 Address Routes
+# ---------------------------------------------------------
+@app.post("/api/addresses", response_model=schemas.AddressResponse)
+def create_address(
+    address: schemas.AddressBase,
+    db: Session = Depends(db.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    return crud.create_user_address(db, current_user.id, address)
+
+@app.get("/api/addresses")
+def get_user_addresses(
+    db: Session = Depends(db.get_db),
+    current_user: models.User = Depends(auth.get_current_user)
+):
+    addresses = crud.get_user_addresses(db, current_user.id)
+    return {"addresses": addresses}
+
+# ---------------------------------------------------------
 # 🌱 Auto Seed Products & Admin User
 # ---------------------------------------------------------
 def seed_products():
@@ -276,15 +330,6 @@ def seed_products():
                 "category": "Electronics",
                 "stock_quantity": 40
             },
-            {
-                "name": "Gaming Laptop", 
-                "price": 1299.99, 
-                "description": "High-performance gaming laptop with RTX graphics.",
-                "image_url": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Electronics",
-                "stock_quantity": 15
-            },
-            
             # Fashion
             {
                 "name": "Designer Leather Jacket", 
@@ -302,15 +347,6 @@ def seed_products():
                 "category": "Fashion",
                 "stock_quantity": 35
             },
-            {
-                "name": "Vintage Sunglasses", 
-                "price": 89.99, 
-                "description": "Classic aviator sunglasses with UV protection.",
-                "image_url": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Fashion",
-                "stock_quantity": 60
-            },
-            
             # Home & Kitchen
             {
                 "name": "Modern Coffee Table", 
@@ -320,15 +356,6 @@ def seed_products():
                 "category": "Home",
                 "stock_quantity": 15
             },
-            {
-                "name": "Smart LED TV 55-inch", 
-                "price": 499.99, 
-                "description": "4K Ultra HD Smart TV with built-in streaming apps.",
-                "image_url": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Home",
-                "stock_quantity": 20
-            },
-            
             # Kitchen
             {
                 "name": "Stainless Steel Cookware Set", 
@@ -338,23 +365,6 @@ def seed_products():
                 "category": "Kitchen",
                 "stock_quantity": 25
             },
-            {
-                "name": "Air Fryer XL", 
-                "price": 89.99, 
-                "description": "Digital air fryer for healthy cooking with less oil.",
-                "image_url": "https://images.unsplash.com/photo-1610057099443-6489badf2c0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Kitchen",
-                "stock_quantity": 30
-            },
-            {
-                "name": "Coffee Maker Machine", 
-                "price": 129.99, 
-                "description": "Programmable coffee maker with thermal carafe.",
-                "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Kitchen",
-                "stock_quantity": 40
-            },
-            
             # Sports
             {
                 "name": "Yoga Mat Premium", 
@@ -364,15 +374,6 @@ def seed_products():
                 "category": "Sports",
                 "stock_quantity": 45
             },
-            {
-                "name": "Dumbbell Set 20kg", 
-                "price": 79.99, 
-                "description": "Adjustable dumbbell set for home workouts.",
-                "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Sports",
-                "stock_quantity": 20
-            },
-            
             # Beauty
             {
                 "name": "Skincare Gift Set", 
@@ -382,15 +383,6 @@ def seed_products():
                 "category": "Beauty",
                 "stock_quantity": 35
             },
-            {
-                "name": "Professional Hair Dryer", 
-                "price": 89.99, 
-                "description": "Ionic hair dryer for fast drying and frizz control.",
-                "image_url": "https://images.unsplash.com/photo-1522338140262-f46f5913618a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Beauty",
-                "stock_quantity": 25
-            },
-            
             # Books
             {
                 "name": "Bestseller Novel Collection", 
@@ -399,75 +391,6 @@ def seed_products():
                 "image_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
                 "category": "Books",
                 "stock_quantity": 50
-            },
-            {
-                "name": "Cookbook: Healthy Recipes", 
-                "price": 24.99, 
-                "description": "200+ healthy and delicious recipes for everyday cooking.",
-                "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200&q=80",
-                "category": "Books",
-                "stock_quantity": 40
-            }
-        ]
-        for p in default_products:
-            session.add(models.Product(**p))
-        session.commit()
-        print("✅ Default products added to DB.")
-    else:
-        print("✅ Products already exist in DB.")
-    session.close()
-    """Auto populate DB with default products if empty."""
-    session: Session = next(db.get_db())
-
-    if session.query(models.Product).count() == 0:
-        default_products = [
-            {
-                "name": "Wireless Headphones Pro", 
-                "price": 129.99, 
-                "description": "Premium noise-canceling headphones with 30-hour battery life.",
-                "image_url": "https://via.placeholder.com/300x200?text=Headphones",
-                "category": "Electronics",
-                "stock_quantity": 50
-            },
-            {
-                "name": "Smart Fitness Watch", 
-                "price": 199.99, 
-                "description": "Track your health and fitness goals with advanced sensors.",
-                "image_url": "https://via.placeholder.com/300x200?text=Smart+Watch",
-                "category": "Electronics",
-                "stock_quantity": 30
-            },
-            {
-                "name": "Designer Leather Jacket", 
-                "price": 249.99, 
-                "description": "Genuine leather jacket with modern fit and timeless style.",
-                "image_url": "https://via.placeholder.com/300x200?text=Leather+Jacket",
-                "category": "Fashion",
-                "stock_quantity": 25
-            },
-            {
-                "name": "Portable Bluetooth Speaker", 
-                "price": 79.99, 
-                "description": "Waterproof speaker with 360° sound and deep bass.",
-                "image_url": "https://via.placeholder.com/300x200?text=Bluetooth+Speaker",
-                "category": "Electronics",
-                "stock_quantity": 40
-            },
-            {
-                "name": "Modern Coffee Table", 
-                "price": 159.99, 
-                "description": "Minimalist coffee table with storage.",
-                "image_url": "https://via.placeholder.com/300x200?text=Coffee+Table",
-                "category": "Home",
-                "stock_quantity": 15
-            },
-            {
-                "name": "Running Shoes Elite", 
-                "price": 119.99, 
-                "description": "Professional running shoes with responsive cushioning.",
-                "image_url": "https://via.placeholder.com/300x200?text=Running+Shoes",
-                "category": "Sports",
-                "stock_quantity": 35
             },
         ]
         for p in default_products:

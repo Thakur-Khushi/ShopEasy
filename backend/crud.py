@@ -228,7 +228,7 @@ def checkout(db: Session, checkout_data, user_id: int = None, session_id: str = 
                 customer_name=checkout_data.customer_name,
                 customer_email=checkout_data.customer_email,
                 shipping_address=checkout_data.shipping_address,
-                status="confirmed"
+                status="pending"
             )
             db.add(order)
             orders.append(order)
@@ -253,6 +253,29 @@ def get_orders(db: Session, user_id: int = None):
 def get_order_by_id(db: Session, order_id: int):
     """Get a single order by ID."""
     return db.query(models.Order).filter(models.Order.id == order_id).first()
+
+# ---------------------------------------------------------
+# 👑 ORDER MANAGEMENT (Admin)
+# ---------------------------------------------------------
+def update_order_status(db: Session, order_id: int, status: str):
+    """Update order status (Admin only)."""
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if not order:
+        raise ValueError("Order not found")
+    
+    # Validate status
+    valid_statuses = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
+    if status not in valid_statuses:
+        raise ValueError(f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
+    
+    order.status = status
+    db.commit()
+    db.refresh(order)
+    return order
+
+def get_all_orders(db: Session):
+    """Get all orders (Admin only)."""
+    return db.query(models.Order).order_by(models.Order.created_at.desc()).all()
 
 # ---------------------------------------------------------
 # 🏠 Address Management

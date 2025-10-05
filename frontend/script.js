@@ -69,6 +69,14 @@ function showUserInfo() {
   document.getElementById('user-avatar').textContent = currentUser.username
     .charAt(0)
     .toUpperCase();
+
+  // Show admin badge if user is admin
+  const adminBadge = document.getElementById('admin-badge');
+  if (currentUser.is_admin) {
+    adminBadge.classList.remove('hidden');
+  } else {
+    adminBadge.classList.add('hidden');
+  }
 }
 
 function showGuestInfo() {
@@ -97,7 +105,14 @@ function showRegisterForm() {
 function showOrdersPage() {
   hideAllPages();
   document.getElementById('orders-page').classList.remove('hidden');
-  loadOrders();
+
+  if (currentUser && currentUser.is_admin) {
+    document.getElementById('orders-title').textContent = 'All Orders (Admin)';
+    loadAdminOrders();
+  } else {
+    document.getElementById('orders-title').textContent = 'My Orders';
+    loadOrders();
+  }
 }
 
 function hideAllPages() {
@@ -196,6 +211,63 @@ async function loadOrders() {
   } catch (error) {
     console.error('Error loading orders:', error);
     showNotification('Error loading orders', 'error');
+  }
+}
+
+// Admin Functions
+async function loadAdminOrders() {
+  if (!authToken || !currentUser || !currentUser.is_admin) {
+    showNotification('Admin access required', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/orders`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      displayAdminOrders(data.orders);
+    } else {
+      showNotification('Error loading admin orders', 'error');
+    }
+  } catch (error) {
+    console.error('Error loading admin orders:', error);
+    showNotification('Error loading admin orders', 'error');
+  }
+}
+
+async function updateOrderStatus(orderId, newStatus) {
+  if (!authToken || !currentUser || !currentUser.is_admin) {
+    showNotification('Admin access required', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        status: newStatus,
+      }),
+    });
+
+    if (response.ok) {
+      showNotification('Order status updated successfully', 'success');
+      loadAdminOrders(); // Refresh the orders list
+    } else {
+      const error = await response.json();
+      showNotification(error.detail || 'Error updating order status', 'error');
+    }
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    showNotification('Error updating order status', 'error');
   }
 }
 
@@ -349,7 +421,9 @@ function displayOrders(orders) {
                 <strong>Order #${order.id}</strong>
                 <span>$${order.total.toFixed(2)}</span>
             </div>
-            <div>Status: ${order.status}</div>
+            <div>Status: <span class="order-status status-${order.status}">${
+      order.status
+    }</span></div>
             <div>Date: ${new Date(order.created_at).toLocaleDateString()}</div>
             <div class="order-products">
                 <div class="order-product">
@@ -357,6 +431,83 @@ function displayOrders(orders) {
                     <span>$${order.price.toFixed(2)}</span>
                 </div>
             </div>
+        `;
+    container.appendChild(orderItem);
+  });
+}
+
+function displayAdminOrders(orders) {
+  const container = document.getElementById('orders-list');
+
+  if (orders.length === 0) {
+    container.innerHTML = '<div class="empty-cart">No orders found</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+
+  orders.forEach((order) => {
+    const orderItem = document.createElement('div');
+    orderItem.className = 'order-item';
+
+    orderItem.innerHTML = `
+            <div class="order-header">
+                <div>
+                    <strong>Order #${order.id}</strong>
+                    <span class="customer-info">Customer: ${
+                      order.customer_name || 'N/A'
+                    } (${order.customer_email || 'N/A'})</span>
+                </div>
+                <div class="order-actions">
+                    <span class="order-status status-${order.status}">${
+      order.status
+    }</span>
+                    <div class="status-dropdown">
+                        <select onchange="updateOrderStatus(${
+                          order.id
+                        }, this.value)" class="status-select">
+                            <option value="pending" ${
+                              order.status === 'pending' ? 'selected' : ''
+                            }>Pending</option>
+                            <option value="confirmed" ${
+                              order.status === 'confirmed' ? 'selected' : ''
+                            }>Confirmed</option>
+                            <option value="processing" ${
+                              order.status === 'processing' ? 'selected' : ''
+                            }>Processing</option>
+                            <option value="shipped" ${
+                              order.status === 'shipped' ? 'selected' : ''
+                            }>Shipped</option>
+                            <option value="delivered" ${
+                              order.status === 'delivered' ? 'selected' : ''
+                            }>Delivered</option>
+                            <option value="cancelled" ${
+                              order.status === 'cancelled' ? 'selected' : ''
+                            }>Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="order-details">
+                <div><strong>Date:</strong> ${new Date(
+                  order.created_at
+                ).toLocaleDateString()}</div>
+                <div><strong>Total:</strong> $${order.total.toFixed(2)}</div>
+                <div><strong>Shipping Address:</strong> ${
+                  order.shipping_address || 'N/A'
+                }</div>
+            </div>
+            <div class="order-products">
+                <div class="order-product">
+                    <span>${order.name} (x${order.quantity})</span>
+                    <span>$${order.price.toFixed(2)} each</span>
+                </div>
+            </div>
+            ${
+              order.user_id
+                ? `<div class="user-id">User ID: ${order.user_id}</div>`
+                : ''
+            }
         `;
     container.appendChild(orderItem);
   });

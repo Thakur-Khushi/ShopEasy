@@ -28,6 +28,7 @@
             <div class="user-info">
               <div class="user-avatar" id="user-avatar">U</div>
               <span id="username">User</span>
+              <span id="admin-badge" class="admin-badge hidden">Admin</span>
             </div>
             <a href="#" onclick="showOrdersPage()"><i class="fas fa-box"></i> Orders</a>
             <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -147,7 +148,7 @@
 
     <!-- Orders Page -->
     <div id="orders-page" class="hidden">
-      <h2 class="section-title">My Orders</h2>
+      <h2 class="section-title" id="orders-title">My Orders</h2>
       <div class="orders-list" id="orders-list">
         <!-- Orders will be loaded dynamically -->
       </div>

@@ -28,23 +28,22 @@ class Token(BaseModel):
     token_type: str
     user: UserResponse
 
-# Product Schemas (Simplified)
+# Product Schemas
 class ProductBase(BaseModel):
     name: str
     price: float
     description: Optional[str] = None
+    image_url: Optional[str] = None
+    category: Optional[str] = None
+    stock_quantity: int = 10
 
 class ProductCreate(ProductBase):
     pass
 
 class ProductResponse(ProductBase):
     id: int
-    # Remove fields that don't exist in DB
-    # image_url: Optional[str] = None
-    # category: Optional[str] = None
-    # stock_quantity: int = 10
-    # is_active: bool = True
-    # created_at: datetime
+    is_active: bool
+    created_at: datetime
 
     class Config:
         from_attributes = True
@@ -111,3 +110,7 @@ class CheckoutRequest(BaseModel):
     customer_email: str
     shipping_address: str
     payment_method: str = "card"
+
+# Order Status Update Schema
+class OrderStatusUpdate(BaseModel):
+    status: str
