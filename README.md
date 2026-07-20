@@ -137,14 +137,6 @@ npm run dev
 ```
 Frontend URL: `http://127.0.0.1:5173`
 
-### 5. Default admin account
-
-On first run, the backend creates a default admin account from environment variables — **do not hardcode credentials in source**:
-
-```bash
-# Set these before first run
-export ADMIN_EMAIL="admin@shopeasy.com"
-export ADMIN_PASSWORD="<choose-a-strong-password>"
 ```
 
 Change the password immediately if you deploy this anywhere beyond local testing.
