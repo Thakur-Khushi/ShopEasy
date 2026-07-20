@@ -1,14 +1,29 @@
-# ShopEasy
+# 🛍️ ShopEasy
 
-A full-stack e-commerce web application built with React, FastAPI, and MySQL. ShopEasy provides a modern shopping experience with product browsing, authentication, cart management, checkout, order tracking, and admin order management.
+A full-stack e-commerce web application built with **React, FastAPI, and MySQL**. ShopEasy provides a complete shopping experience — product browsing, authentication, cart management, checkout, order tracking, and an admin order dashboard.
+
+**🔗 Live Demo:** [Add your deployed link here]
+**🔗 GitHub:** [Add repo link here]
+
+---
+
+## 📸 Screenshots
+
+> Add 3-4 screenshots or a short GIF here (product catalog, cart, checkout, admin order dashboard). Do this before you push — it's the first thing a recruiter looks at.
+
+---
 
 ## Overview
 
-ShopEasy is a complete mini e-commerce platform designed to demonstrate full-stack development skills. The frontend is built with React and Vite, while the backend provides REST APIs using FastAPI, SQLAlchemy, and JWT authentication.
+ShopEasy is a complete e-commerce platform demonstrating full-stack development. The frontend is built with **React and Vite**; the backend provides REST APIs using **FastAPI, SQLAlchemy, and JWT authentication**.
 
-The application supports both customer and admin workflows, including product discovery, cart operations, checkout, order history, and admin order status updates.
+The application supports both customer and admin workflows — product discovery, cart operations, checkout, order history, and admin order status management.
 
-## Features
+> Built as part of a team project. [Add a line here naming your specific contribution — e.g. "Implemented the FastAPI backend: authentication, cart, and order endpoints" — so it's clear what you personally own.]
+
+---
+
+## ✨ Features
 
 - Responsive e-commerce user interface
 - Product catalog with category filtering
@@ -21,32 +36,33 @@ The application supports both customer and admin workflows, including product di
 - Admin order dashboard
 - Admin order status updates
 - Auto-seeded sample products
-- Default admin account creation on startup
+- Default admin account created on first run (see Setup — do not use in production without changing it)
 
-## Tech Stack
+---
 
-### Frontend
+## 🛠️ Tech Stack
 
+**Frontend**
 - React
 - Vite
 - CSS
 - Lucide React icons
 
-### Backend
-
+**Backend**
 - FastAPI
 - SQLAlchemy
 - Pydantic
 - JWT authentication
-- Passlib password hashing
+- Passlib (password hashing)
 
-### Database
-
+**Database**
 - MySQL
 
-## Project Structure
+---
 
-```txt
+## 🗂️ Project Structure
+
+```
 .
 ├── backend/
 │   ├── main.py
@@ -66,101 +82,95 @@ The application supports both customer and admin workflows, including product di
 └── README.md
 ```
 
-## Getting Started
+---
 
-### 1. Clone the Repository
+## ⚡ Getting Started
 
+### 1. Clone the repository
 ```bash
 git clone <repository-url>
 cd <repository-folder>
 ```
 
-### 2. Create the MySQL Database
-
+### 2. Create the MySQL database
 ```sql
 CREATE DATABASE shopping_system;
 ```
+Update the database credentials in `backend/db.py` — read them from environment variables rather than hardcoding, e.g.:
+```python
+import os
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+```
 
-Update the database credentials in `backend/db.py` if your local MySQL configuration is different.
-
-### 3. Run the Backend
+### 3. Run the backend
 
 Create and activate a virtual environment:
-
 ```bash
 python -m venv venv
 ```
 
-On macOS/Linux:
-
+macOS/Linux:
 ```bash
 source venv/bin/activate
 ```
 
-On Windows:
-
-```powershell
+Windows:
+```bash
 venv\Scripts\activate
 ```
 
 Install dependencies and start the API:
-
 ```bash
 pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-Backend URL:
+- Backend URL: `http://localhost:8000`
+- Interactive API docs (Swagger UI): `http://localhost:8000/docs`
 
-```txt
-http://localhost:8000
-```
-
-API documentation:
-
-```txt
-http://localhost:8000/docs
-```
-
-### 4. Run the Frontend
-
+### 4. Run the frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+Frontend URL: `http://127.0.0.1:5173`
 
-Frontend URL:
+### 5. Default admin account
 
-```txt
-http://127.0.0.1:5173
+On first run, the backend creates a default admin account from environment variables — **do not hardcode credentials in source**:
+
+```bash
+# Set these before first run
+export ADMIN_EMAIL="admin@shopeasy.com"
+export ADMIN_PASSWORD="<choose-a-strong-password>"
 ```
 
-## Default Admin Account
+Change the password immediately if you deploy this anywhere beyond local testing.
 
-The backend creates a default admin account when the application starts:
+---
 
-```txt
-Email: admin@shopeasy.com
-Password: admin123
-```
+## 🌐 API Highlights
 
-## API Highlights
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/login` | Login user |
+| GET | `/api/products` | Fetch products |
+| GET | `/api/products/categories` | Fetch product categories |
+| GET | `/api/cart` | Fetch cart items |
+| POST | `/api/cart/add` | Add item to cart |
+| PUT | `/api/cart/{cart_item_id}` | Update cart item quantity |
+| DELETE | `/api/cart/{cart_item_id}` | Remove item from cart |
+| POST | `/api/checkout` | Place an order |
+| GET | `/api/orders` | Fetch customer orders |
+| GET | `/api/admin/orders` | Fetch all orders (admin) |
+| PUT | `/api/admin/orders/{order_id}/status` | Update order status (admin) |
 
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `GET /api/products` - Fetch products
-- `GET /api/products/categories` - Fetch product categories
-- `GET /api/cart` - Fetch cart items
-- `POST /api/cart/add` - Add item to cart
-- `PUT /api/cart/{cart_item_id}` - Update cart item quantity
-- `DELETE /api/cart/{cart_item_id}` - Remove item from cart
-- `POST /api/checkout` - Place an order
-- `GET /api/orders` - Fetch customer orders
-- `GET /api/admin/orders` - Fetch all orders as admin
-- `PUT /api/admin/orders/{order_id}/status` - Update order status
+---
 
-## Main Workflows
+## 🔁 Main Workflows
 
 - Browse products by category
 - Search products
@@ -171,14 +181,39 @@ Password: admin123
 - View order history
 - Manage order statuses as admin
 
-## Future Improvements
+---
+
+## ✅ Testing
+
+> Currently no automated tests. Planned additions:
+> - API tests for auth, cart, and checkout endpoints (pytest + FastAPI's `TestClient`)
+> - Frontend component tests for cart and checkout flows
+>
+> Run backend tests with: `pytest`
+
+---
+
+## 🚀 Deployment
+
+Not yet deployed. Planned setup:
+- Backend: Render or Railway
+- Frontend: Vercel or Netlify
+- Database: Railway MySQL or PlanetScale
+- Environment variables for DB credentials, JWT secret, and admin account — never committed to source
+
+---
+
+## 🔭 Future Improvements
 
 - Admin product management dashboard
 - Payment gateway integration
 - Product reviews and ratings
 - Persistent wishlist feature
 - Invoice generation
+- Automated tests
 - Deployment-ready environment configuration
+
+---
 
 ## License
 
