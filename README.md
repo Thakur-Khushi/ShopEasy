@@ -7,11 +7,7 @@ A full-stack e-commerce web application built with **React, FastAPI, and MySQL**
 
 ---
 
-## 📸 Screenshots
 
-> Add 3-4 screenshots or a short GIF here (product catalog, cart, checkout, admin order dashboard). Do this before you push — it's the first thing a recruiter looks at.
-
----
 
 ## Overview
 
