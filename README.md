@@ -2,12 +2,9 @@
 
 A full-stack e-commerce web application built with **React, FastAPI, and MySQL**. ShopEasy provides a complete shopping experience — product browsing, authentication, cart management, checkout, order tracking, and an admin order dashboard.
 
-**🔗 Live Demo:** [Add your deployed link here]
-**🔗 GitHub:** [Add repo link here]
+**🚧 Live Demo:** Coming soon — currently runs locally (see [Getting Started](#-getting-started)).
 
 ---
-
-
 
 ## Overview
 
@@ -15,7 +12,7 @@ ShopEasy is a complete e-commerce platform demonstrating full-stack development.
 
 The application supports both customer and admin workflows — product discovery, cart operations, checkout, order history, and admin order status management.
 
-> Built as part of a team project. [Add a line here naming your specific contribution — e.g. "Implemented the FastAPI backend: authentication, cart, and order endpoints" — so it's clear what you personally own.]
+> Designed and built solo — React frontend, FastAPI backend, database schema, and JWT authentication.
 
 ---
 
